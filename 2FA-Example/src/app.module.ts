@@ -8,7 +8,6 @@ import { WebhookModule } from './webhook/webhook.module';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
-      exclude: ['/api/(.*)'],
     }),
     AuthModule,
     WebhookModule,
