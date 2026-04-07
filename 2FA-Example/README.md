@@ -4,6 +4,14 @@
 
 ---
 
+> ⚠️ **Security disclaimer / Avertissement de sécurité**
+>
+> **EN — ** This example is provided for **demonstration purposes only**. The OTP implementation is functional but **not production-ready**: the OTP store is in-memory (resets on restart), there is no rate limiting, no brute-force protection, and no proper session management. Do not use this code as-is in a production environment. Always implement proper security measures when dealing with authentication.
+>
+> **FR — ** Cet exemple est fourni à **titre de démonstration uniquement**. L'implémentation OTP est fonctionnelle mais **non destinée à la production** : le stockage des OTP est en mémoire (réinitialisé au redémarrage), il n'y a pas de limitation de débit, pas de protection contre le brute-force, et pas de gestion de session sécurisée. N'utilisez pas ce code tel quel dans un environnement de production. Implémentez toujours des mesures de sécurité appropriées pour tout système d'authentification.
+
+---
+
 ## English
 
 ### Quick start (local)

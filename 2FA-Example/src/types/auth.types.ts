@@ -14,15 +14,9 @@ export interface OtpEntry {
   campaignId?: number;
 }
 
-export interface AuthToken {
-  token: string;
+export interface VerifyOtpResponse {
+  success: boolean;
   phone: string;
-}
-
-export interface JwtPayload {
-  sub: string;
-  iat: number;
-  exp: number;
 }
 
 export interface LoginEvent {

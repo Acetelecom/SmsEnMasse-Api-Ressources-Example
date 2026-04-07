@@ -1,13 +1,7 @@
-import {
-  Injectable,
-  Logger,
-  UnauthorizedException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import * as crypto from 'crypto';
-import * as jwt from 'jsonwebtoken';
 import { SmsService } from '../sms/sms.service';
-import { OtpEntry, AuthToken, LoginEvent, SendOtpResponse } from '../types/auth.types';
+import { OtpEntry, LoginEvent, SendOtpResponse, VerifyOtpResponse } from '../types/auth.types';
 
 const OTP_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -20,63 +14,49 @@ export class AuthService {
   constructor(private readonly smsService: SmsService) {}
 
   async sendOtp(phone: string): Promise<SendOtpResponse> {
-    if (!phone) {
-      throw new BadRequestException('Phone number is required');
-    }
+    if (!phone) throw new BadRequestException('Phone number is required');
 
     const normalized = this.normalizePhone(phone);
     const code = this.generateOtp();
-    const expiresAt = Date.now() + OTP_TTL_MS;
-
-    // webhookUrl tells SmsEnMasse where to POST delivery status updates.
-    // Must be a publicly accessible URL (use ngrok or similar for local dev).
     const webhookBaseUrl = process.env.WEBHOOK_BASE_URL;
-    const webhookUrl = webhookBaseUrl ? `${webhookBaseUrl}/api/webhook/sms` : undefined;
 
     const result = await this.smsService.sendSms({
       recipients: normalized,
       message: `Your verification code is: ${code} (valid 5 min)`,
       sender: 'VerifySMS',
       name: 'OTP Login',
-      webhookUrl,
+      webhookUrl: webhookBaseUrl ? `${webhookBaseUrl}/api/webhook/sms` : undefined,
     });
 
-    this.otpStore.set(normalized, { code, phone: normalized, expiresAt, campaignId: result.campagneId });
-    this.logger.log(`OTP stored for ${normalized}, expires at ${new Date(expiresAt).toISOString()}`);
+    this.otpStore.set(normalized, {
+      code,
+      phone: normalized,
+      expiresAt: Date.now() + OTP_TTL_MS,
+      campaignId: result.campagneId,
+    });
 
     return { message: 'OTP sent successfully' };
   }
 
-  async verifyOtp(phone: string, code: string, ip: string): Promise<AuthToken> {
-    if (!phone || !code) {
-      throw new BadRequestException('Phone and code are required');
-    }
+  async verifyOtp(phone: string, code: string, ip: string): Promise<VerifyOtpResponse> {
+    if (!phone || !code) throw new BadRequestException('Phone and code are required');
 
     const normalized = this.normalizePhone(phone);
     const entry = this.otpStore.get(normalized);
 
-    if (!entry) {
-      throw new UnauthorizedException('No OTP found for this phone number. Please request a new code.');
-    }
+    if (!entry) throw new UnauthorizedException('No OTP found. Please request a new code.');
 
     if (Date.now() > entry.expiresAt) {
       this.otpStore.delete(normalized);
       throw new UnauthorizedException('OTP has expired. Please request a new code.');
     }
 
-    if (entry.code !== code.trim()) {
-      throw new UnauthorizedException('Invalid verification code.');
-    }
+    if (entry.code !== code.trim()) throw new UnauthorizedException('Invalid verification code.');
 
     this.otpStore.delete(normalized);
+    this.loginHistory.push({ phone: normalized, timestamp: new Date().toISOString(), ip, campaignId: entry.campaignId });
 
-    const jwtSecret = process.env.JWT_SECRET || 'fallback-dev-secret';
-    const token = jwt.sign({ sub: normalized }, jwtSecret, { expiresIn: '1h' });
-
-    const event: LoginEvent = { phone: normalized, timestamp: new Date().toISOString(), ip, campaignId: entry.campaignId };
-    this.loginHistory.push(event);
-
-    return { token, phone: normalized };
+    return { success: true, phone: normalized };
   }
 
   getLoginHistory(): LoginEvent[] {

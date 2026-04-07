@@ -1,7 +1,6 @@
 /**
- * Verify page — Step 2: submit the OTP code received by SMS
+ * Verify page — Step 2: submit the OTP code received by SMS.
  * The code is verified server-side against the stored OTP.
- * On success the server returns a JWT token stored in localStorage.
  */
 (function () {
   const phone = sessionStorage.getItem('pending_phone');
@@ -44,8 +43,6 @@
         throw new Error(data.message || 'Verification failed');
       }
 
-      // Store session info locally — the JWT comes from the backend
-      localStorage.setItem('auth_token', data.token);
       localStorage.setItem('auth_phone', data.phone);
       localStorage.setItem('auth_login_time', new Date().toISOString());
       sessionStorage.removeItem('pending_phone');
