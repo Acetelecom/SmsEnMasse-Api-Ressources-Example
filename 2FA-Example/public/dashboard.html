@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — SmsEnMasse 2FA Example</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dashboard-body">
+  <div class="container">
+    <div class="card wide">
+      <div class="logo">
+        <h1>Welcome!</h1>
+        <p id="welcomeMsg">You are logged in via SMS 2FA</p>
+      </div>
+
+      <div class="info-grid">
+        <p><strong>Phone:</strong> <span id="phoneDisplay">—</span></p>
+        <p><strong>Logged in at:</strong> <span id="loginTime">—</span></p>
+      </div>
+
+      <p class="section-title">Login History <span class="badge" id="historyCount">0</span></p>
+      <div id="historyList" class="history-list">
+        <p class="empty-state">Loading...</p>
+      </div>
+
+      <button id="logoutBtn" class="btn btn-danger">Logout</button>
+    </div>
+  </div>
+
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

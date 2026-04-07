@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — SmsEnMasse 2FA Example</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="logo">
+        <h1>SMS 2FA Login</h1>
+        <p>Example powered by <a href="https://www.smsenmasse.fr" target="_blank">SmsEnMasse</a></p>
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <div class="phone-row">
+            <span class="phone-prefix">+</span>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              placeholder="33612345678"
+              autocomplete="tel"
+              required
+            >
+          </div>
+          <span class="field-hint">International format without + &mdash; e.g. <strong>33612345678</strong> for France</span>
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn btn-primary">
+          Send Verification Code
+        </button>
+
+        <div id="error" class="error-box hidden"></div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/login.js"></script>
+</body>
+</html>
