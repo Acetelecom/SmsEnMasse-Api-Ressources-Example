@@ -50,13 +50,13 @@ Open `http://localhost:3000` (full app) or `http://localhost:3001` (frontend onl
 4. In Railway → your service → **Variables**, add all the variables from `.env.example`:
    ```
    SMSENMASSE_API_KEY=your_api_key
-   JWT_SECRET=a-strong-random-secret
-   SMTP_HOST=smtp.gmail.com
-   SMTP_PORT=587
-   SMTP_USER=you@gmail.com
-   SMTP_PASS=your_app_password
-   SMTP_FROM=you@gmail.com
+   MAIL_FROM=noreply@yourdomain.com
    REPORT_EMAIL=admin@yourdomain.com
+   SMTP_HOST=smtp.example.com
+   SMTP_PORT=587
+   SMTP_SECURE=false
+   SMTP_USER=you@example.com
+   SMTP_PASS=your_smtp_password
    ```
 
 5. In Railway → your service → **Settings** → **Networking** → **Generate Domain**  
@@ -141,8 +141,8 @@ This section describes the **demonstration** built on top of the SmsEnMasse API.
 1. User enters their phone number on the login page.
 2. The backend sends a 6-digit OTP via the **SmsEnMasse API**.
 3. The user enters the code received by SMS (valid 5 minutes).
-4. The backend verifies the code and returns a **JWT token**.
-5. A **login report email** is sent to the configured admin address.
+4. The backend verifies the code and confirms authentication.
+5. A **delivery report email** is sent to the configured admin address when SmsEnMasse posts a webhook.
 6. The dashboard displays the full login history (in-memory, resets on server restart).
 
 #### Flow diagram
@@ -201,21 +201,19 @@ This section describes the **demonstration** built on top of the SmsEnMasse API.
 # SmsEnMasse API key (required)
 SMSENMASSE_API_KEY=your_api_key_here
 
-# JWT secret (required)
-JWT_SECRET=a-strong-random-secret
-
-# SMTP — optional, for login report emails
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=you@gmail.com
-SMTP_PASS=your_app_password
-SMTP_FROM=you@gmail.com
+# Email delivery reports — sent via SMTP when a webhook is received
+MAIL_FROM=noreply@yourdomain.com
 REPORT_EMAIL=admin@yourdomain.com
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=you@example.com
+SMTP_PASS=your_smtp_password
 
 PORT=3000
 ```
 
-> Email reporting is optional. If SMTP vars are not set, it is silently skipped.
+> Email reporting requires SMTP configuration. If `SMTP_HOST` is not set, `sendmail` is used as fallback (only works on servers where it is available).
 
 ---
 
@@ -255,13 +253,13 @@ Ouvrir `http://localhost:3000` (app complète) ou `http://localhost:3001` (front
 3. Dans Railway → votre service → **Variables**, ajouter toutes les variables de `.env.example` :
    ```
    SMSENMASSE_API_KEY=votre_clé_api
-   JWT_SECRET=un-secret-fort
-   SMTP_HOST=smtp.gmail.com
-   SMTP_PORT=587
-   SMTP_USER=vous@gmail.com
-   SMTP_PASS=votre_mot_de_passe_app
-   SMTP_FROM=vous@gmail.com
+   MAIL_FROM=noreply@votredomaine.com
    REPORT_EMAIL=admin@votredomaine.com
+   SMTP_HOST=smtp.example.com
+   SMTP_PORT=587
+   SMTP_SECURE=false
+   SMTP_USER=vous@example.com
+   SMTP_PASS=votre_mot_de_passe_smtp
    ```
 
 4. Dans Railway → votre service → **Settings** → **Networking** → **Generate Domain**  
@@ -346,8 +344,8 @@ Cette section décrit la **démonstration** construite au-dessus de l'API SmsEnM
 1. L'utilisateur saisit son numéro de téléphone sur la page de connexion.
 2. Le backend envoie un OTP à 6 chiffres via l'**API SmsEnMasse**.
 3. L'utilisateur saisit le code reçu par SMS (valable 5 minutes).
-4. Le backend vérifie le code et retourne un **token JWT**.
-5. Un **email de reporting** est envoyé à l'adresse administrateur configurée.
+4. Le backend vérifie le code et confirme l'authentification.
+5. Un **email de rapport de livraison** est envoyé à l'adresse administrateur configurée lorsque SmsEnMasse poste un webhook.
 6. Le tableau de bord affiche l'historique des connexions (en mémoire, réinitialisé au redémarrage).
 
 #### Schéma du flux
@@ -373,21 +371,19 @@ Cette section décrit la **démonstration** construite au-dessus de l'API SmsEnM
 # Clé API SmsEnMasse (obligatoire)
 SMSENMASSE_API_KEY=votre_clé_api
 
-# Secret JWT (obligatoire)
-JWT_SECRET=un-secret-fort-et-aléatoire
-
-# SMTP — optionnel, pour les emails de rapport de connexion
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=vous@gmail.com
-SMTP_PASS=votre_mot_de_passe_app
-SMTP_FROM=vous@gmail.com
+# Rapports email de livraison — envoyés via SMTP lors de la réception d'un webhook
+MAIL_FROM=noreply@votredomaine.com
 REPORT_EMAIL=admin@votredomaine.com
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=vous@example.com
+SMTP_PASS=votre_mot_de_passe_smtp
 
 PORT=3000
 ```
 
-> L'envoi d'email est optionnel. Si les variables SMTP ne sont pas renseignées, l'envoi est ignoré silencieusement.
+> L'envoi d'email nécessite une configuration SMTP. Si `SMTP_HOST` n'est pas renseigné, `sendmail` est utilisé en fallback (uniquement disponible sur les serveurs où il est installé).
 
 ---
 

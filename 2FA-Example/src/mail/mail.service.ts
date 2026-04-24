@@ -16,7 +16,19 @@ const STATUT_LABELS: Record<number, string> = {
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name);
-  private readonly transporter = nodemailer.createTransport({ sendmail: true });
+  private readonly transporter = nodemailer.createTransport(
+    process.env.SMTP_HOST
+      ? {
+          host: process.env.SMTP_HOST,
+          port: parseInt(process.env.SMTP_PORT || '587', 10),
+          secure: process.env.SMTP_SECURE === 'true',
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+          },
+        }
+      : { sendmail: true },
+  );
 
   async sendDeliveryReport(options: SmsDeliveryReportMailOptions): Promise<void> {
     const statutLabel = STATUT_LABELS[options.statut] ?? `Unknown (${options.statut})`;
